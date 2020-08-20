@@ -3,12 +3,16 @@ services:
 
   db:
     restart: always
-    image: postgres:9.6-alpine
+    image: postgres:10-alpine
     shm_size: 256mb
     networks:
       - internal_network
+    environment:
+      - POSTGRES_USER=mastodon
+      - POSTGRES_PASSWORD=CHANGEME
+      - POSTGRES_DB=mastodon
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
+      test: ["CMD", "pg_isready", "-U", "mastodon"]
     volumes:
       - ./postgres:/var/lib/postgresql/data
 
@@ -108,6 +112,24 @@ services:
 #    networks:
 #      - external_network
 #      - internal_network
+  # nginx:
+  #   image: staticfloat/nginx-certbot
+  #   ports:
+  #     - "0.0.0.0:80:80"
+  #     - "0.0.0.0:443:443"
+  #   environment:
+  #     CERTBOT_EMAIL: info@peterarato.com
+  #   volumes:
+  #     - ./nginx/user.conf.d:/etc/nginx/user.conf.d:ro
+  #     - ./nginx/letsencrypt:/etc/letsencrypt
+  #     - ./public/:/home/mastodon/live/public
+  #   restart: always
+  #   depends_on:
+  #     - web
+  #     - streaming
+  #   networks:
+  #     - external_network
+  #     - internal_network
 
 networks:
   external_network:
